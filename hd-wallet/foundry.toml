@@ -11,7 +11,9 @@ ffi = true
 
 remappings = [
   "forge-std/=dependencies/forge-std-1.9.6/src/",
-  "@oppenzeppelin-contracts/=dependencies/@openzeppelin-contracts-5.2.0/"
+  "@oppenzeppelin-contracts/=dependencies/@openzeppelin-contracts-5.2.0/",
+  "@openzeppelin-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.2.0/"
+  
 ]
 
 # [rpc_endpoints]
@@ -24,3 +26,4 @@ remappings = [
 [dependencies]
 forge-std = "1.9.6"
 "@openzeppelin-contracts" = "5.2.0"
+"@openzeppelin-contracts-upgradeable" = "5.2.0"

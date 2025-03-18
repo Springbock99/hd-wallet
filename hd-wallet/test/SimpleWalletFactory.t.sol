@@ -5,7 +5,7 @@ import {Test, Vm, console} from "forge-std/Test.sol";
 import {SimpleWallet} from "../contracts/SimpleWallet.sol";
 import {SimpleWalletFactory} from "../contracts/SimpleWalletFactory.sol";
 
-contract WalletFactoryTest is Test {
+contract SimpleWalletFactoryTest is Test {
     SimpleWalletFactory public factory;
     address public owner;
     address public user1;
