@@ -7,10 +7,8 @@ import {Beacon} from "./Beacon.sol";
 contract WalletFactory {
     address public immutable beacon;
 
-    // Map from owner address to salt to wallet address
     mapping(address => mapping(bytes32 => address)) public wallets;
 
-    // Array of wallets per owner for easy retrieval
     mapping(address => address[]) public userWallets;
 
     event WalletCreated(
@@ -29,7 +27,6 @@ contract WalletFactory {
      * @return walletAddr The address of the deployed wallet
      */
     function deployWallet(bytes32 salt) external returns (address) {
-        // Check if wallet with this salt already exists for the sender
         require(
             wallets[msg.sender][salt] == address(0),
             "Wallet with this salt already exists"
