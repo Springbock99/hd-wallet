@@ -27,16 +27,28 @@ contract WalletSystemTest is Test {
         factory = new WalletFactory(address(beacon));
     }
 
-    function testDeployWalletViaFactory() public {
-        // Deploy wallet for user1
+    function test_DeployWalletViaFactory() public {
         vm.prank(user1);
         address walletAddr = factory.deployWallet(salt);
 
-        // Verify it was stored
         assertEq(factory.wallets(user1, salt), walletAddr);
 
-        // Verify the implementation address from the beacon
         address impl = factory.getImplementation();
         assertEq(impl, address(implementation));
+    }
+
+    function test_WalletProxyDelegatesToImplementation() public {
+        vm.prank(user1);
+        address walletAddr = factory.deployWallet(salt);
+        console.log("WalltAdrss of the factory contract:", walletAddr);
+
+        // Send ETH to wallet
+        vm.deal(deployer, 1 ether);
+        payable(walletAddr).transfer(1 ether);
+
+        // Call getBalance() via proxy
+        uint256 balance = ImplementationWallet(payable(walletAddr))
+            .getBalance();
+        assertEq(balance, 1 ether);
     }
 }
