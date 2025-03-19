@@ -25,6 +25,8 @@ contract WalletSystemTest is Test {
 
         // Deploy factory with beacon address
         factory = new WalletFactory(address(beacon));
+
+        vm.deal(user1, 10 ether);
     }
 
     function test_DeployWalletViaFactory() public {
@@ -50,5 +52,68 @@ contract WalletSystemTest is Test {
         uint256 balance = ImplementationWallet(payable(walletAddr))
             .getBalance();
         assertEq(balance, 1 ether);
+    }
+
+    function test_Withdraw() public {
+        vm.prank(user1);
+        address walletAdr = factory.deployWallet(salt);
+
+        vm.deal(walletAdr, 2 ether);
+
+        uint256 initialWalletBalance = address(walletAdr).balance;
+        uint256 initialUserBalance = address(user1).balance;
+
+        console.log("initial Wallet Balance:", initialWalletBalance);
+        console.log("initial User Balance:", initialUserBalance);
+
+        vm.prank(user1);
+        ImplementationWallet(payable(walletAdr)).withdraw(1 ether);
+
+        uint256 finalWalletBalance = address(walletAdr).balance;
+        uint256 finalUserBalance = address(user1).balance;
+
+        assertEq(finalWalletBalance, initialWalletBalance - 1 ether);
+        assertEq(finalUserBalance, initialUserBalance + 1 ether);
+    }
+
+    function test_WithdrawWithWrongAddress() public {
+        vm.prank(user1);
+        address walletAddr = factory.deployWallet(salt);
+
+        vm.deal(walletAddr, 2 ether);
+
+        uint256 initialWalletBalance = address(walletAddr).balance;
+        uint256 initialUserBalance = address(user1).balance;
+
+        console.log("initial Wallet Balance:", initialWalletBalance);
+        console.log("initial User Balance:", initialUserBalance);
+
+        vm.prank(user1);
+        ImplementationWallet(payable(walletAddr)).withdraw(1 ether);
+
+        uint256 finalWalletBalance = address(walletAddr).balance;
+        uint256 finalUserBalance = address(user1).balance;
+
+        assertEq(finalWalletBalance, initialWalletBalance - 1 ether);
+        assertEq(finalUserBalance, initialUserBalance + 1 ether);
+
+        address nonOwner = address(0xCAFE);
+        vm.startPrank(nonOwner);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Ownable.OwnableUnauthorizedAccount.selector,
+                nonOwner
+            )
+        );
+        ImplementationWallet(payable(walletAddr)).withdraw(1 ether);
+
+        vm.stopPrank();
+
+        assertEq(
+            address(walletAddr).balance,
+            finalWalletBalance,
+            "Wallet balance should not change after failed withdrawal"
+        );
     }
 }
