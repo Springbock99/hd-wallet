@@ -43,7 +43,7 @@ contract SimpleWalletFactoryTest is Test {
         );
 
         SimpleWallet wallet = SimpleWallet(payable(deployedAddress));
-        assertEq(wallet.owner(), user1, "Wallet owner should be user1");
+        assertEq(wallet.owner(), user1, "Wallet Owner should be user1");
     }
 
     function test_DeterministicAddresses() public {
